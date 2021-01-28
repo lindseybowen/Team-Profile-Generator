@@ -1,8 +1,16 @@
 const inquirer = require('inquirer')
 const fs = require('fs')
+
 let newTeamProfile = []
 
-var Manager = require("./lib/employee")
+function createApp(){
+    teamMemPrompt()
+}
+
+
+var Manager = require("./lib/manager.js")
+var Engineer = require("./lib/engineer.js")
+var Intern = require("./lib/intern.js")
 
 
 function managerPrompt(){
@@ -15,7 +23,7 @@ function managerPrompt(){
         {
             type: 'input',
             name: 'ID',
-            message: 'What is the team managers employee ID?',
+            message: 'What is the employee ID of the team manager?',
         },
         {
             type: 'input',
@@ -34,43 +42,8 @@ function managerPrompt(){
         var managerNumber = response.managerNumber
         const newTeamMem = new Manager(name, ID, email, managerNumber);
         newTeamProfile.push(newTeamMem);
-        teamMemPrompt();
-
-        const data = `
-    <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="style.css">
-        <title>My Team</title>
-        </head>
-        <body>
-            <nav class="navbar navbar-light" style="background-color: lightsteelblue;">
-                <span class="navbar-brand mb-0 h1 w-100 text-center" style="background-color: lightsteelblue;">My Team</span>
-                <p id="myTeam" class="lead"></p>
-            </nav>
-            <div class="card" style="width: 18rem;">
-            <div class="card-header">Team Manager: ${response.name}</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Manager ID: ${response.ID}</li>
-                    <li class="list-group-item">Manager Email: ${response.email}</li>
-                    <li class="list-group-item">Manager Number${response.number}</li>
-                </ul>
-            </div>
-    
-    </body>
-</html>
-    `
-
-    fs.writeFile('index.html', data, (error) => {
-
-        error ? console.error(error) : console.log('success!')
-});
+        teamMemPrompt();  
     })
-
 }
 
 function engineerPrompt(){
@@ -83,7 +56,7 @@ function engineerPrompt(){
         {
             type: 'input',
             name: 'ID',
-            message: 'What is the engineers employee ID?',
+            message: 'What is the employee ID of the engineer?',
         },
         {
             type: 'input',
@@ -96,12 +69,12 @@ function engineerPrompt(){
             message: 'What is the Github username of the engineer?',
         },
     ]).then(function(response){
-        var engineerName = response.engineerName;
-        var engineerID = response.engineerID;
-        var engineerEmail = response.engineerEmail;
-        var engineerGithub = response.engineerNumber
-        const newTeamProfile = new Engineer(engineerName, engineerID, engineerEmail, engineerGithub);
-        finalTeam.push(newTeamProfile);
+        var name = response.name;
+        var ID = response.ID;
+        var email = response.email;
+        var engineerGithub = response.engineerGithub;
+        const newTeamMem = new Engineer(name, ID, email, engineerGithub);
+        newTeamProfile.push(newTeamMem);
         teamMemPrompt();
     })
 }    
@@ -116,7 +89,7 @@ function internPrompt(){
         {
             type: 'input',
             name: 'ID',
-            message: 'What is the interns employee ID?',
+            message: 'What is the employee ID of the intern?',
         },
         {
             type: 'input',
@@ -129,12 +102,12 @@ function internPrompt(){
             message: 'What school does the intern go to?',
         },
     ]).then(function(response){
-        var internName = response.internName;
-        var internID = response.internID;
-        var internEmail = response.internEmail;
+        var name = response.name;
+        var ID = response.ID;
+        var email = response.email;
         var internSchool = response.internSchool
-        const newTeamProfile = new Intern(internName, internID, internEmail, internSchool);
-        finalTeam.push(newTeamProfile);
+        const newTeamMem = new Intern(name, ID, email, internSchool);
+        newTeamProfile.push(newTeamMem);
         teamMemPrompt();
     })
 } 
@@ -144,14 +117,123 @@ function internPrompt(){
             {
                 type: 'list',
                 name: 'addMore',
-                message: 'Would you like to add another member to your team?',
-                choices: ['Add another Engineer.', 'Add another Intern.', 'No, my team is complete.']
+                message: 'Would you like to add a member to your team?',
+                choices: ['Add an Engineer.', 'Add an Intern.', 'Add a Manager.', 'No, my team is complete.']
             },
-        ]);
+        ])
+        .then(function (response) {
+
+            switch (response.addMore) {
+                case "Add an Engineer.":
+                    engineerPrompt();
+                    break;
+
+                case "Add an Intern.":
+                    internPrompt();
+                    break;
+
+                case "Add a Manager.":
+                    managerPrompt();
+                    break;
+
+                case "No, my team is complete.":
+                    completeTeam();
+                    break;
+            }
+        });
     }
 
-
+function completeTeam() {
+    console.log("Congratulations! You have a team.")
     
+    beginHTML()
+    inputHTML();
+    endHTML();
+}
+    
+function beginHTML(){
+    const data = `
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <link rel="stylesheet" href="style.css">
+            <title>My Team</title>
+            </head>
+            <body style="background-color: white">
+                <nav class="navbar navbar-light" style="background-color: silver;">
+                    <span class="navbar-brand mb-0 h1 w-100 text-center" style="font-size: xx-large;">My Team</span>
+                    <p id="myTeam" class="lead"></p>
+                </nav>
+    
+                <div class="card" style="width: 18rem;">
+                <div class="card-header" style="background-color: royalblue;">Team Manager: hjkl</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" style="background-color: royalblue;">Manager ID: hjk</li>
+                        <li class="list-group-item" style="background-color: royalblue;">Manager Email: hj</li>
+                        <li class="list-group-item" style="background-color: royalblue;">Manager Numberundefined</li>
+                    </ul>
+                </div>
+            `
+    fs.writeFile('index.html', data, (error) => {
+        error ? console.error(error) : console.log('success!')
+});
+}
 
-managerPrompt();
+function inputHTML(){
+    let data = ""
+    newTeamProfile.forEach(function(employee){
+        if (employee.getRole() === "Manager"){
+            data +=
+            `<div class="card" style="width: 18rem;">
+            <div class="card-header">Manager:</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">${employee.name}</li>
+                    <li class="list-group-item">ID: ${employee.ID}</li>
+                    <li class="list-group-item">Email: ${employee.email}</li>
+                    <li class="list-group-item">Office Number: ${employee.managerNumber}</li>
+                </ul>
+            </div>`
+        } else if (employee.getRole() === "Engineer"){
+            data +=
+            `<div class="card" style="width: 18rem;">
+            <div class="card-header">Engineer:</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">${employee.name}</li>
+                    <li class="list-group-item">ID: ${employee.ID}</li>
+                    <li class="list-group-item">Email: ${employee.email}</li>
+                    <li class="list-group-item">Github Username: https://github.com/${employee.engineerGithub}</li>
+                </ul>
+            </div>`
+        } else {
+            data +=
+            `<div class="card" style="width: 18rem;">
+            <div class="card-header">Intern:</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">${employee.name}</li>
+                    <li class="list-group-item">ID: ${employee.ID}</li>
+                    <li class="list-group-item">Email: ${employee.email}</li>
+                    <li class="list-group-item">School: ${employee.internSchool}</li>
+                </ul>
+            </div>`
+        }
+    })
+   
+        fs.appendFile("index.html", data, function (error) {
+            error ? console.error(error) : console.log('success!')
+        })
+}
 
+function endHTML(){
+    data = 
+    `</body>
+    </html>
+        `
+    fs.appendFile("index.html", data, function (error) {
+        error ? console.error(error) : console.log('success!')
+    });
+}
+createApp();
