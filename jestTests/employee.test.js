@@ -13,7 +13,7 @@ describe("getRole", () => {
 
   describe("getName", () => {
     // Positive test
-    it("should return 'Sam' from getName()", () => {
+    it("should return 'Alanna' from getName()", () => {
       // Arrange
       const employee = new Employee("Alanna", 30, "alanna@gmail.com");
       // Assert

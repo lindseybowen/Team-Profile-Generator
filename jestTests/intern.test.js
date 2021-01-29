@@ -40,7 +40,7 @@ describe("getEmail", () => {
       const intern = new Intern("Alanna", 30, "alanna@gmail.com", "Columbia");
       // Assert
       console.log(intern);
-      expect(intern.getEmail()).toEqual("sam@gmail.com");
+      expect(intern.getEmail()).toEqual("alanna@gmail.com");
     });
 });
 
